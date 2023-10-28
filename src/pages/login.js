@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
 async function loginUser(credentials) {
-    return fetch('http://bff:3002/login', {
+    return fetch('http://bff-nodejs:3002/login', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

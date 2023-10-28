@@ -12,14 +12,14 @@ export default class MyReservations extends React.Component {
     const userTokenObj =  sessionStorage.getItem('token');
     const userToken = JSON.parse(userTokenObj);
     const employee_id = userToken?.token
-    //fetch('http://bff:3002/myreservations', {
+    //fetch('http://bff-nodejs:3002/myreservations', {
     //    method: 'POST',
     //    headers: {
     //        'Content-Type': 'application/json'
     //    },
     //    body: JSON.stringify({ employee_id: employee_id })
     //  })
-    axios.post('http://bff:3002/myreservations', {
+    axios.post('http://bff-nodejs:3002/myreservations', {
         employee_id: employee_id
       },{
         headers: {
