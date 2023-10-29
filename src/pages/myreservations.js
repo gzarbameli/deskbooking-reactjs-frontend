@@ -12,20 +12,22 @@ export default class MyReservations extends React.Component {
     const userTokenObj =  sessionStorage.getItem('token');
     const userToken = JSON.parse(userTokenObj);
     const employee_id = userToken?.token
-    //fetch('http://bff-nodejs:3002/myreservations', {
+    //fetch('http://backend-python:5000/myreservations', {
     //    method: 'POST',
     //    headers: {
     //        'Content-Type': 'application/json'
     //    },
     //    body: JSON.stringify({ employee_id: employee_id })
     //  })
-    axios.post('http://bff-nodejs:3002/myreservations', {
+    axios.post('http://bff-desk-reservation-app.example.com/myreservations', {
         employee_id: employee_id
       },{
         headers: {
           'Content-Type': 'application/json'
       }}) 
       .then(res => {
+        console.log(res.data)
+        console.log(res)
         var reservations = res.data;
         reservations = reservations.map(reservation => {reservation.date = reservation.date.substring(0,10); return reservation;})
         reservations = reservations.map(reservation => {reservation.starting_time = reservation.starting_time.slice(0,-3); return reservation;})

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { render } from '@testing-library/react';
 
 async function bookUser(credentials) {
-  return fetch('http://bff-nodejs:3002/book', {
+  return fetch('http://bff-desk-reservation-app.example.com/book', {
       method: 'POST',
       headers: {
           'Content-Type': 'application/json'
