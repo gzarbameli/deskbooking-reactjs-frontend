@@ -13,7 +13,6 @@ import {
 import { ZoneContextManager } from '@opentelemetry/context-zone';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-proto';
 import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions';
-import { HttpInstrumentation } from('@opentelemetry/instrumentation-http');
 
 import {
   CompositePropagator,
