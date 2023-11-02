@@ -8,32 +8,33 @@ export default class MyReservations extends React.Component {
   }
 
 
-  componentDidMount() {
+  async componentDidMount() {
     const userTokenObj =  sessionStorage.getItem('token');
     const userToken = JSON.parse(userTokenObj);
     const employee_id = userToken?.token
-    //fetch('http://backend-python:5000/myreservations', {
-    //    method: 'POST',
-    //    headers: {
-    //        'Content-Type': 'application/json'
-    //    },
-    //    body: JSON.stringify({ employee_id: employee_id })
-    //  })
-    axios.post('http://bff-desk-reservation-app.example.com/myreservations', {
+    fetch('http://bff-desk-reservation-app.example.com/myreservations', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
         employee_id: employee_id
-      },{
-        headers: {
-          'Content-Type': 'application/json'
-      }}) 
-      .then(res => {
-        console.log(res.data)
-        console.log(res)
-        var reservations = res.data;
-        reservations = reservations.map(reservation => {reservation.date = reservation.date.substring(0,10); return reservation;})
-        reservations = reservations.map(reservation => {reservation.starting_time = reservation.starting_time.slice(0,-3); return reservation;})
-        reservations = reservations.map(reservation => {reservation.ending_time = reservation.ending_time.slice(0,-3); return reservation;})
+      })
+    })
+      .then(response => response.json()) // Parsa la risposta come JSON
+      .then(data => {
+        // Esegui la conversione dei dati e l'aggiornamento dello stato
+        const reservations = data.map(reservation => ({
+          ...reservation,
+          date: reservation.date.substring(0, 10),
+          starting_time: reservation.starting_time.slice(0, -3),
+          ending_time: reservation.ending_time.slice(0, -3)
+        }));
         this.setState({ reservations });
       })
+      .catch(error => {
+        console.error('Errore nella richiesta:', error);
+      });
   }
 
     render() {

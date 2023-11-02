@@ -8,24 +8,25 @@ import { registerInstrumentations } from '@opentelemetry/instrumentation';
 import { getWebAutoInstrumentations } from '@opentelemetry/auto-instrumentations-web';
 import {
   BatchSpanProcessor,
-  TracerConfig,
   WebTracerProvider,
 } from '@opentelemetry/sdk-trace-web';
 import { ZoneContextManager } from '@opentelemetry/context-zone';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-proto';
 import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions';
+import { HttpInstrumentation } from('@opentelemetry/instrumentation-http');
+
+import {
+  CompositePropagator,
+  W3CBaggagePropagator,
+  W3CTraceContextPropagator,
+} from '@opentelemetry/core';
 
 const collectorOptions = {
-  url: 'http://otel-collector-daemonset-collector.otel-collector.svc.cluster.local/v1/traces', // <-- nginx with reverse proxy to http://localhost:4318/
+  url: 'http://otel-collector-http.example.com/v1/traces', // <-- nginx with reverse proxy to http://localhost:4318/
 };
 
-const providerConfig: TracerConfig = {
-  resource: new Resource({
-    [SemanticResourceAttributes.SERVICE_NAME]: 'my-react-app',
-  }),
-};
-
-const provider = new WebTracerProvider(providerConfig);
+const resource = new Resource({ [SemanticResourceAttributes.SERVICE_NAME]: 'react-frontend' });
+const provider = new WebTracerProvider({ resource });
 
 provider.addSpanProcessor(
   new BatchSpanProcessor(new OTLPTraceExporter(collectorOptions)),
@@ -35,10 +36,29 @@ provider.register({
   contextManager: new ZoneContextManager(),
 });
 
-registerInstrumentations({
-  instrumentations: [getWebAutoInstrumentations()],
+provider.register({
+  propagator: new CompositePropagator({
+    propagators: [
+      new W3CBaggagePropagator(),
+      new W3CTraceContextPropagator(),
+    ],
+  }),
 });
 
+registerInstrumentations({
+  tracerProvider: provider,
+  instrumentations: [
+    getWebAutoInstrumentations({
+      '@opentelemetry/instrumentation-fetch': {
+        propagateTraceHeaderCorsUrls: /.*/,
+        clearTimingResources: true,
+        applyCustomAttributesOnSpan(span) {
+          span.setAttribute('app.synthetic_request', 'false');
+        },
+      },
+    }),
+    ],
+});
 
 ReactDOM.render(
   <React.StrictMode>
