@@ -12,14 +12,12 @@ export default class MyReservations extends React.Component {
     const userTokenObj =  sessionStorage.getItem('token');
     const userToken = JSON.parse(userTokenObj);
     const employee_id = userToken?.token
-    fetch('http://bff-desk-reservation-app.example.com/myreservations', {
-      method: 'POST',
+
+    fetch(`http://bff-desk-reservation-app.example.com/myreservations?employee_id=${employee_id}`, {
+      method: 'GET',
       headers: {
         'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        employee_id: employee_id
-      })
+      }
     })
       .then(response => response.json()) // Parsa la risposta come JSON
       .then(data => {
